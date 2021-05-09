@@ -39,19 +39,6 @@ def GUI(self, Gtk, GdkPixbuf, working_dir, os, Gdk, fn):
     self.imageset = Gtk.Image().new_from_pixbuf(pset)
     self.Eset.add(self.imageset)
 
-    self.Elig = Gtk.EventBox()
-    self.Elig.set_name("light")
-    self.Elig.connect("button_press_event", self.on_click, 'light')
-    self.Elig.add_events(Gdk.EventMask.ENTER_NOTIFY_MASK)  # 1
-    self.Elig.connect("enter-notify-event", self.on_mouse_in, 'light')
-    self.Elig.add_events(Gdk.EventMask.LEAVE_NOTIFY_MASK)  # 1
-    self.Elig.connect("leave-notify-event", self.on_mouse_out, 'light')
-
-    plig = GdkPixbuf.Pixbuf().new_from_file_at_size(
-        os.path.join(working_dir, 'light.svg'), 48, 48)
-    self.imagelig = Gtk.Image().new_from_pixbuf(plig)
-    self.Elig.add(self.imagelig)
-
     vbox1 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
     vbox2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
     vbox3 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -204,24 +191,10 @@ def GUI(self, Gtk, GdkPixbuf, working_dir, os, Gdk, fn):
 
     mainbox2.pack_start(hbox1, True, False, 0)
 
-    # mainbox4.pack_start(self.Elig, False, False, 0)
-    
-    # mainbox3.pack_end(mainbox4, False, False, 0)
-
     # spacers
-    hbox17.pack_start(self.Elig, False, False, 0)
     hbox17.pack_start(self.Eset, False, False, 0)
     mainbox.pack_start(hbox17, False, False, 0)
-    # mainbox.pack_start(Gtk.Label(), False, False, 0)
-    # mainbox.pack_start(Gtk.Label(), False, False, 0)
-
-    # mainbox.pack_end(mainbox3, False, False, 0)
     mainbox.pack_start(mainbox2, True, False, 0)
-    # mainbox.set_size_request(self.single_width, 0)
-    # container.pack_start(mainbox, False, False, 0)
-    # if self.single_width < self.width:
-    #     container.pack_start(spacer, True, True, 0)
-    #     spacer.pack_start(Gtk.Label(label=""), True, True, 0)
 
     self.popover = Gtk.Popover()
     self.popover2 = Gtk.Popover()
@@ -236,7 +209,7 @@ def GUI(self, Gtk, GdkPixbuf, working_dir, os, Gdk, fn):
     lbl9 = Gtk.Label(label="Icon size:")
     lbl10 = Gtk.Label(label="Theme:")
     lbl11 = Gtk.Label(label="Font size:")
-    # lbl11 = Gtk.Label(label="Wallpaper:")
+
     try:
         vals = self.opacity*100
         ad1 = Gtk.Adjustment(vals, 0, 100, 5, 10, 0)
@@ -249,15 +222,6 @@ def GUI(self, Gtk, GdkPixbuf, working_dir, os, Gdk, fn):
     self.hscale.set_hexpand(True)
     self.hscale.set_size_request(150, 0)
     self.hscale.set_valign(Gtk.Align.START)
-    # self.wall = Gtk.Entry()
-    # self.wall.set_size_request(180, 0)
-    # self.wall.set_width_chars(True)
-    # self.wall.set_text(self.wallpaper)
-
-    # self.hscale = Gtk.Entry()
-    # self.hscale.set_size_request(80, 0)
-    # self.hscale.set_width_chars(True)
-    # self.hscale.set_text(str(int(self.opacity*100)))
 
     try:
         vals = self.font
@@ -284,16 +248,6 @@ def GUI(self, Gtk, GdkPixbuf, working_dir, os, Gdk, fn):
     self.icons.set_hexpand(True)
     self.icons.set_size_request(150, 0)
     self.icons.set_valign(Gtk.Align.START)
-
-    # self.icons = Gtk.Entry()
-    # self.icons.set_size_request(80, 0)
-    # self.icons.set_width_chars(True)
-    # self.icons.set_text(str(self.icon))
-
-    # self.hovers = Gtk.Entry()
-    # self.hovers.set_size_request(80, 0)
-    # self.hovers.set_width_chars(True)
-    # self.hovers.set_text(str(self.hover))
 
     self.themes = Gtk.ComboBoxText()
     lists = fn._get_themes()
@@ -329,13 +283,3 @@ def GUI(self, Gtk, GdkPixbuf, working_dir, os, Gdk, fn):
 
     self.popover.add(vbox)
     self.popover.set_position(Gtk.PositionType.TOP)
-
-    hbox8 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=20)
-
-    plbl = Gtk.Label()
-    plbl.set_markup("<span size=\"large\">You can change the lockscreen wallpaper\nwith <b>Arcolinux BetterLockScreen</b></span>")
-
-    hbox8.pack_end(plbl, False, False, 10)
-
-    self.popover2.add(hbox8)
-    self.popover2.set_position(Gtk.PositionType.TOP)
