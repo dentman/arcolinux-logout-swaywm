@@ -1,14 +1,8 @@
-# =====================================================
-#                  Author Brad Heffernan
-# =====================================================
-
 import cairo
 import gi
 import shutil
 import GUI
-import Modal
 import Functions as fn
-import threading
 import signal
 
 gi.require_version('Gtk', '3.0')
@@ -19,12 +13,12 @@ from gi.repository import Gtk, GdkPixbuf, Gdk, Wnck, GLib, GdkX11  # noqa
 
 
 class TransparentWindow(Gtk.Window):
+    cmd_logout = "swaymsg exit"
     cmd_shutdown = "systemctl poweroff"
     cmd_restart = "systemctl reboot"
     cmd_suspend = "systemctl suspend"
     cmd_hibernate = "systemctl hibernate"
-    cmd_lock = 'betterlockscreen -l dimblur -- --timestr="%H:%M"'
-    wallpaper = "/usr/share/arcologout/wallpaper.jpg"
+    cmd_lock = "swaylock -i /home/dntmn/Downloads/simple.png"
     d_buttons = ['cancel',
                  'shutdown',
                  'restart',
@@ -70,29 +64,9 @@ class TransparentWindow(Gtk.Window):
         if not fn.os.path.isfile(fn.home + "/.config/arcologout/arcologout.conf"):
             shutil.copy(fn.root_config, fn.home + "/.config/arcologout/arcologout.conf")
 
-        # s = Gdk.Screen.get_default()
-        # self.width = s.width()
-        # height = s.height()
-
-        # screens = Gdk.Display.get_default()
-        # s = screens.get_n_monitors()
-
         self.width = 0
-        # for x in range(s):
-        #     sc = screens.get_monitor(x)
-        #     rec = sc.get_geometry()
-        #     self.width += rec.width
 
         screen = self.get_screen()
-
-        # monitor = screens.get_monitor(0)
-        # rect = monitor.get_geometry()
-
-        # self.single_width = rect.width
-        # height = rect.height
-
-        # self.move(0, 0)
-        # self.resize(self.width, height)
 
         visual = screen.get_rgba_visual()
         if visual and screen.is_composited():
@@ -112,9 +86,7 @@ class TransparentWindow(Gtk.Window):
             with open("/tmp/arcologout.lock", "w") as f:
                 f.write("")
 
-
     def on_save_clicked(self, widget):
-
         try:
             with open(fn.home + "/.config/arcologout/arcologout.conf", "r") as f:
                 lines = f.readlines()
@@ -156,7 +128,6 @@ class TransparentWindow(Gtk.Window):
                 f.writelines(lines)
                 f.close()
             self.popover.popdown()
-
 
     def on_mouse_in(self, widget, event, data):
         if data == self.binds.get('shutdown'):
@@ -277,10 +248,9 @@ class TransparentWindow(Gtk.Window):
             fn.button_active(self, data, GdkPixbuf)
 
         if (data == self.binds.get('logout')):
-            command = fn._get_logout()
             fn.os.unlink("/tmp/arcologout.lock")
             fn.os.unlink("/tmp/arcologout.pid")
-            self.__exec_cmd(command)
+            self.__exec_cmd(self.cmd_logout)
             Gtk.main_quit()
 
         elif (data == self.binds.get('restart')):
@@ -308,30 +278,21 @@ class TransparentWindow(Gtk.Window):
             Gtk.main_quit()
 
         elif (data == self.binds.get('lock')):
-            if not fn.os.path.isdir(fn.home + "/.cache/i3lock"):
-                if fn.os.path.isfile(self.wallpaper):
-                    self.lbl_stat.set_markup("<span size=\"x-large\"><b>Caching lockscreen images for a faster locking next time</b></span>")  # noqa
-                    t = threading.Thread(target=fn.cache_bl,
-                                         args=(self, GLib, Gtk,))
-                    t.daemon = True
-                    t.start()
-                else:
-                    self.lbl_stat.set_markup("<span size=\"x-large\"><b>You need to set the wallpaper path in arcologout.conf</b></span>")  # noqa
-                    self.Ec.set_sensitive(True)
-                    self.active = False
-            else:
-                fn.os.unlink("/tmp/arcologout.lock")
-                self.__exec_cmd(self.cmd_lock)
-                Gtk.main_quit()
+            fn.os.unlink("/tmp/arcologout.lock")
+            self.__exec_cmd(self.cmd_lock)
+            Gtk.main_quit()
+
         elif (data == self.binds.get('settings')):
             self.themes.grab_focus()
             self.popover.set_relative_to(self.Eset)
             self.popover.show_all()
             self.popover.popup()
+
         elif (data == 'light'):
             self.popover2.set_relative_to(self.Elig)
             self.popover2.show_all()
             self.popover2.popup()
+
         else:
             fn.os.unlink("/tmp/arcologout.lock")
             fn.os.unlink("/tmp/arcologout.pid")
