@@ -3,7 +3,6 @@
 #                  Author Brad Heffernan
 # =====================================================
 
-import subprocess
 import os
 import shutil
 from pathlib import Path
@@ -11,14 +10,14 @@ import configparser
 
 home = os.path.expanduser("~")
 base_dir = os.path.dirname(os.path.realpath(__file__))
-# here = Path(__file__).resolve()
 working_dir = ''.join([str(Path(__file__).parents[2]), "/share/arcologout/"])
-# config = "/etc/arcologout.conf"
+
 if os.path.isfile(home + "/.config/arcologout/arcologout.conf"):
     config = home + "/.config/arcologout/arcologout.conf"
 else:
     config = ''.join([str(Path(__file__).parents[3]), "/etc/arcologout.conf"])
 root_config = ''.join([str(Path(__file__).parents[3]), "/etc/arcologout.conf"])
+
 
 def _get_position(lists, value):
     data = [string for string in lists if value in string]
@@ -30,23 +29,6 @@ def _get_themes():
     y = [x for x in os.listdir(working_dir + "themes")]
     y.sort()
     return y
-
-
-def cache_bl(self, GLib, Gtk):
-    if os.path.isfile("/usr/bin/betterlockscreen"):
-        with subprocess.Popen(["betterlockscreen", "-u",
-                               self.wallpaper],
-                              shell=False,
-                              stdout=subprocess.PIPE) as f:
-            for line in f.stdout:
-                GLib.idle_add(self.lbl_stat.set_markup, "<span size=\"x-large\"><b>" + line.decode() + "</b></span>")
-
-        GLib.idle_add(self.lbl_stat.set_text, "")
-        os.unlink("/tmp/arcologout.lock")
-        os.system(self.cmd_lock)
-        Gtk.main_quit()
-    else:
-        print("not installed betterlockscreen.")
 
 
 def get_config(self, Gdk, Gtk, config):
@@ -68,9 +50,9 @@ def get_config(self, Gdk, Gtk, config):
             if self.parser.has_option("settings", "font_size"):
                 self.font = int(self.parser.get("settings", "font_size"))
 
-        if self.parser.has_section("commands"):
-            if self.parser.has_option("commands", "lock"):
-                self.cmd_lock = str(self.parser.get("commands", "lock"))
+        # if self.parser.has_section("commands"):
+        #    if self.parser.has_option("commands", "lock"):
+        #        self.cmd_lock = str(self.parser.get("commands", "lock"))
 
         if self.parser.has_section("binds"):
             if self.parser.has_option("binds", "lock"):
@@ -93,8 +75,6 @@ def get_config(self, Gdk, Gtk, config):
         if self.parser.has_section("themes"):
             if self.parser.has_option("themes", "theme"):
                 self.theme = self.parser.get("themes", "theme")
-            # if self.parser.has_option("themes", "hover_color"):
-            #     self.hover = self.parser.get("themes", "hover_color")
 
         if len(self.theme) > 1:
             style_provider = Gtk.CssProvider()
@@ -110,55 +90,6 @@ def get_config(self, Gdk, Gtk, config):
         os.unlink(home + "/.config/arcologout/arcologout.conf")
         if not os.path.isfile(home + "/.config/arcologout/arcologout.conf"):
             shutil.copy(root_config, home + "/.config/arcologout/arcologout.conf")
-
-
-def _get_logout():
-    out = subprocess.run(["sh", "-c", "env | grep DESKTOP_SESSION"],
-                         shell=False, stdout=subprocess.PIPE)
-    desktop = out.stdout.decode().split("=")[1].strip()
-
-    print("Your desktop is " + desktop)
-    if desktop in ("herbstluftwm", "/usr/share/xsessions/herbstluftwm"):
-        return "herbstclient quit"
-    elif desktop in ("bspwm", "/usr/share/xsessions/bspwm"):
-        return "pkill bspwm"
-    elif desktop in ("jwm", "/usr/share/xsessions/jwm"):
-        return "pkill jwm"
-    elif desktop in ("openbox", "/usr/share/xsessions/openbox"):
-        return "pkill openbox"
-    elif desktop in ("awesome", "/usr/share/xsessions/awesome"):
-        return "pkill awesome"
-    elif desktop in ("qtile", "/usr/share/xsessions/qtile"):
-        return "pkill qtile"
-    elif desktop in ("xmonad", "/usr/share/xsessions/xmonad"):
-        return "pkill xmonad"
-    elif desktop in ("dwm", "/usr/share/xsessions/dwm"):
-        return "pkill dwm"
-    elif desktop in ("i3", "/usr/share/xsessions/i3"):
-        return "pkill i3"
-    elif desktop in ("i3-with-shmlog", "/usr/share/xsessions/i3-with-shmlog"):
-        return "pkill i3-with-shmlog"
-    elif desktop in ("lxqt", "/usr/share/xsessions/lxqt"):
-        return "pkill lxqt"
-    elif desktop in ("spectrwm", "/usr/share/xsessions/spectrwm"):
-        return "pkill spectrwm"
-    elif desktop in ("xfce", "/usr/share/xsessions/xfce"):
-        return "xfce4-session-logout -f -l"
-    elif desktop in ("sway", "/usr/share/xsessions/sway"):
-        return "pkill sway"
-    elif desktop in ("icewm", "/usr/share/xsessions/icewm"):
-        return "pkill icewm"
-    elif desktop in ("icewm-session", "/usr/share/xsessions/icewm-session"):
-        return "pkill icewm-session"
-    elif desktop in ("cwm", "/usr/share/xsessions/cwm"):
-        return "pkill cwm"
-    elif desktop in ("fvwm3", "/usr/share/xsessions/fvwm3"):
-        return "pkill fvwm3"
-    elif desktop in ("stumpwm", "/usr/share/xsessions/stumpwm"):
-        return "pkill stumpwm"
-    elif desktop in ("leftwm", "/usr/share/xsessions/leftwm"):
-        return "pkill leftwm"
-    return None
 
 
 def button_active(self, data, GdkPixbuf):
