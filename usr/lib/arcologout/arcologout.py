@@ -18,7 +18,7 @@ class TransparentWindow(Gtk.Window):
     cmd_restart = "systemctl reboot"
     cmd_suspend = "systemctl suspend"
     cmd_hibernate = "systemctl hibernate"
-    cmd_lock = "swaylock -i /home/dntmn/Downloads/simple.png"
+    cmd_lock = "swaylock -i " + fn.os.path.join(fn.working_dir, 'wallpaper.jpg')
     d_buttons = ['cancel',
                  'shutdown',
                  'restart',
